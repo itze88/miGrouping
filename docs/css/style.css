@@ -1,0 +1,38 @@
+/* 
+    Document   : style
+    Created on : 26.02.2013, 15:25:01
+    Author     : prog_standard
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.clear { 
+    padding: 0px;
+    margin: 0px;
+    border: none;
+    clear: both;
+}
+
+.mi_container {
+    width: 500px;
+}
+.mi_group {
+    
+}
+.mi_group_title {
+    background: #ccc;
+    border: 1px solid #000;
+}
+.mi_group_content {
+    border: 1px solid #000;
+}
+
+
+/****** test1 ********/
+
+.test2.mi_container {
+    float:left;
+    border: 1px solid #000;
+}
+
+/****** end test1 ********/
