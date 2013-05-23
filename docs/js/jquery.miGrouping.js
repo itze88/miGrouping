@@ -4,7 +4,7 @@
  */
 (function( $ ){
     var methods = {
-        init : function( options ) { 
+        init : function( options ) {
 
             options = options || {};
             var namespace = options.namespace || "mi";
@@ -21,6 +21,7 @@
                     afterInit: function(container){},
                     beforeOpen: function(handler, ui, indexToOpen){},
                     afterOpen: function(handler, ui, indexToOpen){},
+                    scrollInView: true,
                     changeAll: false,
                     allGroups: this
                 }, options);
@@ -63,6 +64,15 @@
                         $this.miGrouping('activate', {
                             activate: indexToOpen
                         });
+                    }
+
+                    if (data.options.scrollInView) {
+                        currentAnchor = $(this).children('.'+options.titlebarClass+'_anchor');
+                        if (currentAnchor) {
+                            var topOffset = currentAnchor.offset();
+                            topOffset = topOffset.top;
+                            $(window).scrollTop(topOffset);
+                        }
                     }
                 });
 
