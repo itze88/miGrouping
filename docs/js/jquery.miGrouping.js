@@ -21,7 +21,8 @@
                     afterInit: function(container){},
                     beforeOpen: function(handler, ui, indexToOpen){},
                     afterOpen: function(handler, ui, indexToOpen){},
-                    scrollInView: true,
+                    scrollInView: false,
+                    scrollClass: namespace + '_group_anchor',
                     changeAll: false,
                     allGroups: this
                 }, options);
@@ -67,8 +68,11 @@
                     }
 
                     if (data.options.scrollInView) {
-                        currentAnchor = $(this).children('.'+options.titlebarClass+'_anchor');
-                        if (currentAnchor) {
+                        currentAnchor = $(this).parent().find('.'+options.scrollClass);
+                        if (!currentAnchor || typeof currentAnchor === undefined || currentAnchor.length <= 0) {
+                            currentAnchor = $(this);
+                        }
+                        if (currentAnchor && typeof currentAnchor !== undefined && currentAnchor.length > 0) {
                             var topOffset = currentAnchor.offset();
                             topOffset = topOffset.top;
                             $(window).scrollTop(topOffset);
