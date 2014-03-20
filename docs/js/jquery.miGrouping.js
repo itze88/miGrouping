@@ -10,31 +10,33 @@
             var namespace = options.namespace || "mi";
 
             var options = $.extend({
-                    containerClass: namespace + '_container',
-                    groupClass: namespace + '_group',
-                    titlebarClass: namespace + '_group_title',
-                    contentClass: namespace + '_group_content',
-                    ajaxUrlClass: namespace + '_ajax_url',
-                    activate: 0,
-                    ajaxContent: false,
-                    beforeInit: function(container){},
-                    afterInit: function(container){},
-                    beforeOpen: function(handler, ui, indexToOpen){},
-                    afterOpen: function(handler, ui, indexToOpen){},
-                    scrollInView: false,
-                    scrollClass: namespace + '_group_anchor',
-                    changeAll: false,
-                    allGroups: this
-                }, options);
+                containerClass: namespace + '_container',
+                groupClass: namespace + '_group',
+                titlebarClass: namespace + '_group_title',
+                contentClass: namespace + '_group_content',
+                ajaxUrlClass: namespace + '_ajax_url',
+                activate: 0,
+                ajaxContent: false,
+                beforeInit: function(container){},
+                afterInit: function(container){},
+                beforeOpen: function(handler, ui, indexToOpen){},
+                afterOpen: function(handler, ui, indexToOpen){},
+                scrollInView: false,
+                scrollClass: namespace + '_group_anchor',
+                changeAll: false,
+                setGroupHeights: true,
+                equalGroupHeight: false,
+                groupHeight: false,
+                allGroups: this
+            }, options);
 
-            return this.each(function(){
+            initResult = this.each(function(){
 
                 var $this = $(this),
                     data = $this.data('miGrouping');
 
                 // If the plugin hasn't been initialized yet
                 if ( !data ) {
-
                     var container   = $this,
                         groups      = container.children('.'+options.groupClass),
                         titlebars   = groups.children('.'+options.titlebarClass),
@@ -57,14 +59,11 @@
 
                 data.titlebars.click(function(){
                     indexToOpen = data.titlebars.index($(this));
+                    data.options.activate = indexToOpen;
                     if (data.options.changeAll) {
-                        data.options.allGroups.miGrouping('activate', {
-                            activate: indexToOpen
-                        });
+                        data.options.allGroups.miGrouping('activate', data.options);
                     } else {
-                        $this.miGrouping('activate', {
-                            activate: indexToOpen
-                        });
+                        $this.miGrouping('activate', data.options);
                     }
 
                     if (data.options.scrollInView) {
@@ -85,15 +84,28 @@
                 }
 
                 if (data.options.activate !== false) {
-                    $this.miGrouping('activate', {
-                        activate: data.options.activate
-                    });
+                    if (data.options.changeAll === false) {
+                        //Open each group after initialization
+                        $this.miGrouping('activate', data.options);
+                    }
                 }
+
             });
+
+            if (options.activate !== false) {
+                if (options.changeAll === true) {
+                    //Open all initialized groups together after initialization
+                    options.allGroups.miGrouping('activate', options);
+                }
+            }
+
+            options.allGroups.miGrouping('initHeight', options);
+
+            return initResult;
         },
         activate : function( newValues ) {
 
-            return this.each(function(){
+            activateResult = this.each(function(){
                 var $this = $(this),
                     data = $this.data('miGrouping');
 
@@ -128,6 +140,49 @@
                     }
                 }
             });
+
+            return activateResult;
+        },
+        setGroupHeight : function() {
+            this.each(function(){
+                var $this = $(this),
+                    data = $this.data('miGrouping');
+
+                if (data) {
+                    data.contents.eq(data.options.activate).height(data.options.groupHeight);
+                }
+            });
+        },
+        initHeight : function( options ) {
+            if (data.options.setGroupHeights) {
+                groupHeights = {};
+                initHeightResult = this.each(function(){
+                    var $this = $(this),
+                        data = $this.data('miGrouping');
+
+                    if (data.options.changeAll) {
+                        if (data) {
+                            data.contents.each(function(){
+                                if(data.options.equalGroupHeight) {
+                                    if (!groupHeights[data.contents.index($(this))] || groupHeights[data.contents.index($(this))] < $(this).height()) {
+                                        groupHeights[data.contents.index($(this))] = $(this).height();
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+
+                $.each(groupHeights, function(groupIndex, groupHeight) {
+                    options.groupHeight = groupHeight;
+                    options.activate = groupIndex;
+                    options.allGroups.miGrouping('setGroupHeight', options);
+                });
+            } else {
+                initHeightResult = null;
+            }
+
+            return initHeightResult;
         }
     };
 
@@ -143,4 +198,3 @@
     };
 
 })( jQuery );
-
